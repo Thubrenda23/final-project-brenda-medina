@@ -45,6 +45,8 @@ app.use(
 );
 
 // Sessions - Use MongoDB store for production (works across multiple instances)
+const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/vicare?appName=Vilcare';
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'vicare_dev_secret',
@@ -52,8 +54,9 @@ app.use(
     saveUninitialized: false,
     name: 'vicare.sid', // Custom session name
     store: MongoStore.create({
-      client: mongoose.connection.getClient(),
+      mongoUrl: mongoUri,
       dbName: 'vicare',
+      collectionName: 'sessions',
     }),
     cookie: {
       httpOnly: true,

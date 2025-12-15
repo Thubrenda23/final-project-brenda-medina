@@ -6,10 +6,15 @@ const cors = require('cors');
 
 const connectDB = require('./config/db');
 
+const app = express();
+
+// Trust Render's proxy in production so secure cookies work
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // Connect to MongoDB
 connectDB();
-
-const app = express();
 
 // Middleware
 app.use(express.json());

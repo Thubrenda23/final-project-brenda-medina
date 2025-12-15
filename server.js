@@ -50,11 +50,24 @@ app.use(
   })
 );
 
-// Debug middleware to log session info (only for API routes to reduce noise)
+// Debug middleware to log session info and response cookies
 app.use('/api', (req, res, next) => {
   console.log(`[${req.method} ${req.path}] Session ID: ${req.sessionID}`);
   console.log(`[${req.method} ${req.path}] Session userId: ${req.session?.userId || 'none'}`);
   console.log(`[${req.method} ${req.path}] Cookies received: ${req.headers.cookie || 'none'}`);
+  
+  // Log Set-Cookie header in response
+  const originalEnd = res.end;
+  res.end = function(...args) {
+    const setCookieHeader = res.getHeader('Set-Cookie');
+    if (setCookieHeader) {
+      console.log(`[${req.method} ${req.path}] Set-Cookie header: ${Array.isArray(setCookieHeader) ? setCookieHeader.join(', ') : setCookieHeader}`);
+    } else {
+      console.log(`[${req.method} ${req.path}] No Set-Cookie header in response`);
+    }
+    originalEnd.apply(res, args);
+  };
+  
   if (!req.session?.userId && req.path !== '/auth/login' && req.path !== '/auth/signup' && req.path !== '/auth/logout') {
     console.log(`[${req.method} ${req.path}] WARNING: No userId in session`);
     console.log(`[${req.method} ${req.path}] Session exists: ${!!req.session}`);

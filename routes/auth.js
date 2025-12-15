@@ -98,9 +98,21 @@ router.post('/login', async (req, res) => {
     
     console.log('Login: Session ID =', req.sessionID);
     console.log('Login: Setting userId =', user._id.toString());
-    console.log('Login: Session cookie will be set automatically');
+    console.log('Login: Session object keys =', Object.keys(req.session));
+    
+    // Manually touch the session to ensure it's saved
+    req.session.touch();
     
     // Send response - session will be saved automatically by express-session
+    // But we'll also manually ensure cookie is set
+    res.cookie('vicare.sid', req.sessionID, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+    
     res.json({
       message: 'Login successful',
       user: { id: user._id, email: user.email, name: user.name },

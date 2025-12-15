@@ -47,6 +47,7 @@ app.use(
       secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in development
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       path: '/', // Ensure cookie is available for all paths
+      domain: undefined, // Don't set domain - let browser use default
     },
   })
 );

@@ -23,21 +23,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // CORS configuration - allow credentials for session cookies
-const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? ['https://vicare-medicine-tracker.onrender.com']
-  : ['http://localhost:3000', 'http://127.0.0.1:3000'];
-
+// Since frontend and backend are on same domain, CORS is mainly for API calls
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
-        callback(null, true);
-      } else {
-        callback(null, true); // Allow all in production for now, can restrict later
-      }
-    },
+    origin: true, // Allow same-origin requests (frontend and backend on same domain)
     credentials: true, // Important: allow cookies
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -60,13 +49,23 @@ app.use(
     }),
     cookie: {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' needed for cross-site in production
-      secure: process.env.NODE_ENV === 'production', // true in production, false in development
+      sameSite: 'lax', // Use 'lax' since frontend and backend are on same domain
+      secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in development
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       path: '/', // Ensure cookie is available for all paths
     },
   })
 );
+
+// Debug middleware to log session info
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'production') {
+    console.log('Session ID:', req.sessionID);
+    console.log('Session userId:', req.session?.userId);
+    console.log('Cookies:', req.headers.cookie);
+  }
+  next();
+});
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));

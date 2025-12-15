@@ -57,10 +57,17 @@ router.post('/signup', async (req, res) => {
     });
 
     req.session.userId = user._id.toString();
-
-    res.json({
-      message: 'Signup successful',
-      user: { id: user._id, email: user.email, name: user.name },
+    
+    // Ensure session is saved before sending response
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ message: 'Error saving session.' });
+      }
+      res.json({
+        message: 'Signup successful',
+        user: { id: user._id, email: user.email, name: user.name },
+      });
     });
   } catch (err) {
     console.error('Signup error:', err.message);
@@ -88,10 +95,17 @@ router.post('/login', async (req, res) => {
     }
 
     req.session.userId = user._id.toString();
-
-    res.json({
-      message: 'Login successful',
-      user: { id: user._id, email: user.email, name: user.name },
+    
+    // Ensure session is saved before sending response
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ message: 'Error saving session.' });
+      }
+      res.json({
+        message: 'Login successful',
+        user: { id: user._id, email: user.email, name: user.name },
+      });
     });
   } catch (err) {
     console.error('Login error:', err.message);
@@ -106,7 +120,7 @@ router.post('/logout', (req, res) => {
       console.error('Logout error:', err.message);
       return res.status(500).json({ message: 'Error logging out.' });
     }
-    res.clearCookie('connect.sid');
+    res.clearCookie('vicare.sid'); // Use correct session name
     res.json({ message: 'Logged out' });
   });
 });

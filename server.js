@@ -48,10 +48,13 @@ app.use(
     secret: process.env.SESSION_SECRET || 'vicare_dev_secret',
     resave: false,
     saveUninitialized: false,
+    name: 'vicare.sid', // Custom session name
     cookie: {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' needed for cross-site in production
       secure: process.env.NODE_ENV === 'production', // true in production, false in development
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      path: '/', // Ensure cookie is available for all paths
     },
   })
 );

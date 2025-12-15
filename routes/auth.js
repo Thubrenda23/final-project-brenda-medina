@@ -58,12 +58,17 @@ router.post('/signup', async (req, res) => {
 
     req.session.userId = user._id.toString();
     
-    // Ensure session is saved before sending response
+    // Log session info for debugging
+    console.log('Signup: Setting session userId =', user._id.toString());
+    console.log('Signup: Session ID =', req.sessionID);
+    
+    // Save session and send response
     req.session.save((err) => {
       if (err) {
         console.error('Session save error:', err);
         return res.status(500).json({ message: 'Error saving session.' });
       }
+      console.log('Signup: Session saved successfully, userId =', req.session.userId);
       res.json({
         message: 'Signup successful',
         user: { id: user._id, email: user.email, name: user.name },
@@ -96,12 +101,17 @@ router.post('/login', async (req, res) => {
 
     req.session.userId = user._id.toString();
     
-    // Ensure session is saved before sending response
+    // Log session info for debugging
+    console.log('Login: Setting session userId =', user._id.toString());
+    console.log('Login: Session ID =', req.sessionID);
+    
+    // Save session and send response
     req.session.save((err) => {
       if (err) {
         console.error('Session save error:', err);
         return res.status(500).json({ message: 'Error saving session.' });
       }
+      console.log('Login: Session saved successfully, userId =', req.session.userId);
       res.json({
         message: 'Login successful',
         user: { id: user._id, email: user.email, name: user.name },

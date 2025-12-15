@@ -54,8 +54,11 @@ app.use(
 app.use('/api', (req, res, next) => {
   console.log(`[${req.method} ${req.path}] Session ID: ${req.sessionID}`);
   console.log(`[${req.method} ${req.path}] Session userId: ${req.session?.userId || 'none'}`);
-  if (!req.session?.userId && req.path !== '/auth/login' && req.path !== '/auth/signup') {
+  console.log(`[${req.method} ${req.path}] Cookies received: ${req.headers.cookie || 'none'}`);
+  if (!req.session?.userId && req.path !== '/auth/login' && req.path !== '/auth/signup' && req.path !== '/auth/logout') {
     console.log(`[${req.method} ${req.path}] WARNING: No userId in session`);
+    console.log(`[${req.method} ${req.path}] Session exists: ${!!req.session}`);
+    console.log(`[${req.method} ${req.path}] Session keys: ${req.session ? Object.keys(req.session).join(', ') : 'no session'}`);
   }
   next();
 });

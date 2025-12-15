@@ -2,7 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
 const connectDB = require('./config/db');
 
@@ -42,13 +44,17 @@ app.use(
   })
 );
 
-// Sessions
+// Sessions - Use MongoDB store for production (works across multiple instances)
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'vicare_dev_secret',
     resave: false,
     saveUninitialized: false,
     name: 'vicare.sid', // Custom session name
+    store: MongoStore.create({
+      client: mongoose.connection.getClient(),
+      dbName: 'vicare',
+    }),
     cookie: {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' needed for cross-site in production

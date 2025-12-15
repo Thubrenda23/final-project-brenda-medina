@@ -37,9 +37,10 @@ app.use(
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'vicare_dev_secret',
-    resave: false,
-    saveUninitialized: false,
+    resave: true, // Changed to true to ensure session is saved
+    saveUninitialized: true, // Changed to true to create session immediately
     name: 'vicare.sid', // Custom session name
+    rolling: true, // Reset expiration on every request
     cookie: {
       httpOnly: true,
       sameSite: 'lax', // Use 'lax' since frontend and backend are on same domain

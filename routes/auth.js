@@ -56,25 +56,14 @@ router.post('/signup', async (req, res) => {
       name: name || '',
     });
 
+    // Set userId directly - express-session will save automatically
     req.session.userId = user._id.toString();
     
-    // Log session info for debugging
-    console.log('Signup: Setting session userId =', user._id.toString());
     console.log('Signup: Session ID =', req.sessionID);
-    console.log('Signup: Session before save =', JSON.stringify(req.session));
+    console.log('Signup: Setting userId =', user._id.toString());
+    console.log('Signup: Session cookie will be set automatically');
     
-    // Let express-session save automatically, but ensure it's saved
-    await new Promise((resolve, reject) => {
-      req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-          return reject(err);
-        }
-        console.log('Signup: Session saved successfully, userId =', req.session.userId);
-        resolve();
-      });
-    });
-    
+    // Send response - session will be saved automatically by express-session
     res.json({
       message: 'Signup successful',
       user: { id: user._id, email: user.email, name: user.name },
@@ -104,33 +93,17 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
+    // Set userId directly - express-session will save automatically
     req.session.userId = user._id.toString();
-    req.session.regenerate((err) => {
-      if (err) {
-        console.error('Session regenerate error:', err);
-        return res.status(500).json({ message: 'Error creating session.' });
-      }
-      
-      req.session.userId = user._id.toString();
-      
-      // Log session info for debugging
-      console.log('Login: Setting session userId =', user._id.toString());
-      console.log('Login: Session ID =', req.sessionID);
-      
-      // Save session explicitly
-      req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-          return res.status(500).json({ message: 'Error saving session.' });
-        }
-        console.log('Login: Session saved successfully, userId =', req.session.userId);
-        console.log('Login: Cookie should be set in response');
-        
-        res.json({
-          message: 'Login successful',
-          user: { id: user._id, email: user.email, name: user.name },
-        });
-      });
+    
+    console.log('Login: Session ID =', req.sessionID);
+    console.log('Login: Setting userId =', user._id.toString());
+    console.log('Login: Session cookie will be set automatically');
+    
+    // Send response - session will be saved automatically by express-session
+    res.json({
+      message: 'Login successful',
+      user: { id: user._id, email: user.email, name: user.name },
     });
   } catch (err) {
     console.error('Login error:', err.message);

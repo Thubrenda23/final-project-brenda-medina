@@ -1,4 +1,4 @@
-require('dotenv').config({ path: './vicare.env.txt' });
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
@@ -25,7 +25,7 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: 'lax',
-      secure: false, // must be false for http://localhost
+      secure: process.env.NODE_ENV === 'production', // true in production, false in development
     },
   })
 );

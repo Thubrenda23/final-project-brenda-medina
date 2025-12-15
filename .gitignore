@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+*.env
+vicare.env.txt
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Uploads (user-generated content)
+public/uploads/*.jpeg
+public/uploads/*.jpg
+public/uploads/*.png
+public/uploads/*.gif
+
+# Keep uploads directory but ignore files
+!public/uploads/.gitkeep
+

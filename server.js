@@ -1,0 +1,56 @@
+require('dotenv').config({ path: './vicare.env.txt' });
+const express = require('express');
+const path = require('path');
+const session = require('express-session');
+const cors = require('cors');
+
+const connectDB = require('./config/db');
+
+// Connect to MongoDB
+connectDB();
+
+const app = express();
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+
+// Sessions
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'vicare_dev_secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false, // must be false for http://localhost
+    },
+  })
+);
+
+// Static files
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+
+// Routes
+const authRoutes = require('./routes/auth');
+const dashboardRoutes = require('./routes/dashboard');
+const settingsRoutes = require('./routes/settings');
+
+app.use('/api/auth', authRoutes);
+app.use('/api', dashboardRoutes);
+app.use('/api', settingsRoutes);
+
+// Fallback to index.html for root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`ViCare server running on port ${PORT}`);
+});
+
+

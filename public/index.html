@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ViCare - Login / Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="auth-body">
+    <header class="top-logo">
+      <span class="logo-text">
+        <span class="logo-letter-v">V</span>i<span class="logo-letter-c">C</span>are
+      </span>
+    </header>
+
+    <main class="auth-main">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button id="login-tab" class="auth-tab active">Log In</button>
+          <button id="signup-tab" class="auth-tab">Sign Up</button>
+        </div>
+
+        <form id="login-form" class="auth-form">
+          <h2>Welcome back</h2>
+          <label>
+            Email
+            <input type="email" name="email" required />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" required />
+          </label>
+          <button type="submit" class="primary-btn">Log In</button>
+          <button type="button" id="forgot-password-btn" class="secondary-btn small">
+            Forgot password?
+          </button>
+        </form>
+
+        <form id="signup-form" class="auth-form hidden">
+          <h2>Create your ViCare account</h2>
+          <label>
+            Name
+            <input type="text" name="name" />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" required />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" required minlength="6" />
+          </label>
+          <p class="hint">
+            We will verify your email using the ViCare email check service.
+          </p>
+          <button type="submit" class="primary-btn">Sign Up</button>
+        </form>
+
+        <p id="auth-message" class="auth-message"></p>
+      </div>
+    </main>
+
+    <script src="js/auth.js"></script>
+  </body>
+  </html>
+
+

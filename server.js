@@ -34,21 +34,27 @@ app.use(
 );
 
 // Sessions - Use MongoDB store for production (works across multiple instances)
+// Note: For Render free tier with single instance, MemoryStore works fine
+// MongoDB store is only needed if you scale to multiple instances
 const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/vicare?appName=Vilcare';
 
-// Create MongoDB session store with error handling
-let sessionStore;
-try {
-  sessionStore = MongoStore.create({
-    mongoUrl: mongoUri,
-    touchAfter: 24 * 3600, // lazy session update (24 hours)
-    ttl: 24 * 60 * 60, // session TTL in seconds (24 hours)
-  });
-  console.log('MongoDB session store initialized successfully');
-} catch (err) {
-  console.error('Error creating MongoDB session store:', err.message);
-  sessionStore = undefined; // Fallback to MemoryStore if MongoDB store fails
-  console.log('Falling back to MemoryStore (sessions won\'t persist across restarts)');
+// Create MongoDB session store - use mongoose connection if available
+let sessionStore = null;
+if (mongoose.connection.readyState === 1) {
+  // MongoDB is already connected, use it for sessions
+  try {
+    sessionStore = MongoStore.create({
+      client: mongoose.connection.getClient(),
+      dbName: 'vicare',
+    });
+    console.log('MongoDB session store initialized');
+  } catch (err) {
+    console.error('Error creating MongoDB session store:', err.message);
+    console.log('Using MemoryStore (sessions won\'t persist across restarts)');
+  }
+} else {
+  // MongoDB not connected yet, will use MemoryStore for now
+  console.log('MongoDB not connected yet, using MemoryStore initially');
 }
 
 app.use(
@@ -57,7 +63,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     name: 'vicare.sid', // Custom session name
-    store: sessionStore, // Use MongoDB store if available, otherwise MemoryStore
+    store: sessionStore, // Use MongoDB store if available, otherwise MemoryStore (default)
     cookie: {
       httpOnly: true,
       sameSite: 'lax', // Use 'lax' since frontend and backend are on same domain

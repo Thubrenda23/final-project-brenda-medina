@@ -57,12 +57,12 @@ app.use(
   })
 );
 
-// Debug middleware to log session info
-app.use((req, res, next) => {
-  if (process.env.NODE_ENV === 'production') {
-    console.log('Session ID:', req.sessionID);
-    console.log('Session userId:', req.session?.userId);
-    console.log('Cookies:', req.headers.cookie);
+// Debug middleware to log session info (only for API routes to reduce noise)
+app.use('/api', (req, res, next) => {
+  console.log(`[${req.method} ${req.path}] Session ID: ${req.sessionID}`);
+  console.log(`[${req.method} ${req.path}] Session userId: ${req.session?.userId || 'none'}`);
+  if (!req.session?.userId && req.path !== '/auth/login' && req.path !== '/auth/signup') {
+    console.log(`[${req.method} ${req.path}] WARNING: No userId in session`);
   }
   next();
 });

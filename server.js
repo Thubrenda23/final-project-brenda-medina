@@ -36,17 +36,28 @@ app.use(
 // Sessions - Use MongoDB store for production (works across multiple instances)
 const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/vicare?appName=Vilcare';
 
+// Create MongoDB session store with error handling
+let sessionStore;
+try {
+  sessionStore = MongoStore.create({
+    mongoUrl: mongoUri,
+    touchAfter: 24 * 3600, // lazy session update (24 hours)
+    ttl: 24 * 60 * 60, // session TTL in seconds (24 hours)
+  });
+  console.log('MongoDB session store initialized successfully');
+} catch (err) {
+  console.error('Error creating MongoDB session store:', err.message);
+  sessionStore = undefined; // Fallback to MemoryStore if MongoDB store fails
+  console.log('Falling back to MemoryStore (sessions won\'t persist across restarts)');
+}
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'vicare_dev_secret',
     resave: false,
     saveUninitialized: false,
     name: 'vicare.sid', // Custom session name
-    store: MongoStore.create({
-      mongoUrl: mongoUri,
-      dbName: 'vicare',
-      collectionName: 'sessions',
-    }),
+    store: sessionStore, // Use MongoDB store if available, otherwise MemoryStore
     cookie: {
       httpOnly: true,
       sameSite: 'lax', // Use 'lax' since frontend and backend are on same domain

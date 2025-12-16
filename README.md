@@ -23,7 +23,8 @@ npm install
 
 ```bash
 MONGODB_URI=mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/?appName=Vilcare
-SESSION_SECRET=change_this_secret
+JWT_SECRET=your_secret_key_here_change_in_production
+SESSION_SECRET=change_this_secret  # Optional, used as fallback for JWT_SECRET
 EMAIL_VERIFY_API_KEY=YOUR_APILAYER_ACCESS_KEY
 ```
 

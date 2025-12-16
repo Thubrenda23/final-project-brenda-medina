@@ -33,21 +33,20 @@ app.use(
 
 // Sessions configuration
 // Using MemoryStore for now (works fine for single instance on Render free tier)
-// If you scale to multiple instances, we can add MongoDB session store later
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'vicare_dev_secret',
-    resave: true, // Changed to true to ensure session is saved
-    saveUninitialized: true, // Changed to true to create session immediately
+    resave: false, // Only save if session was modified
+    saveUninitialized: false, // Don't create session until something is stored
     name: 'vicare.sid', // Custom session name
-    rolling: true, // Reset expiration on every request
+    rolling: false, // Don't reset expiration on every request
     cookie: {
       httpOnly: true,
       sameSite: 'lax', // Use 'lax' since frontend and backend are on same domain
-      secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in development
+      secure: process.env.NODE_ENV === 'production', // true in production (HTTPS)
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      path: '/', // Ensure cookie is available for all paths
-      domain: undefined, // Don't set domain - let browser use default
+      path: '/', // Cookie available for all paths
+      // Don't set domain - let browser use default (same origin)
     },
   })
 );

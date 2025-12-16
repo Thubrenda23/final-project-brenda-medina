@@ -105,16 +105,23 @@ router.post('/login', async (req, res) => {
     
     console.log('Login: Session ID =', req.sessionID);
     console.log('Login: Setting userId =', user._id.toString());
-    console.log('Login: Session will be saved automatically');
     
-    // Ensure session is saved before sending response
-    await new Promise((resolve) => {
-      req.session.save(() => {
-        console.log('Login: Session saved, userId =', req.session.userId);
-        console.log('Login: Cookie should be set by express-session');
+    // Save session and wait for it to complete
+    await new Promise((resolve, reject) => {
+      req.session.save((err) => {
+        if (err) {
+          console.error('Login: Session save error:', err);
+          return reject(err);
+        }
+        console.log('Login: Session saved successfully');
+        console.log('Login: Session userId after save =', req.session.userId);
+        console.log('Login: Session cookie name = vicare.sid');
         resolve();
       });
     });
+    
+    // Log what cookie will be set
+    console.log('Login: About to send response with session cookie');
     
     res.json({
       message: 'Login successful',

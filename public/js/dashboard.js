@@ -267,12 +267,17 @@ document.addEventListener('DOMContentLoaded', () => {
           }, 2000);
           return;
         }
-        let data = {};
-        try {
-          data = await res.json();
-        } catch {}
-        setDashMessage('error', data.message || 'Could not add medicine.');
-        return;
+              let data = {};
+              try {
+                data = await res.json();
+              } catch {}
+              // Show detailed validation errors if available
+              let errorMsg = data.message || 'Could not add medicine.';
+              if (data.errors && data.errors.length > 0) {
+                errorMsg = data.errors.map(e => e.msg || e.message).join('. ');
+              }
+              setDashMessage('error', errorMsg);
+              return;
       }
       setDashMessage('success', 'Medicine added.');
       medicineForm.reset();
@@ -299,12 +304,17 @@ document.addEventListener('DOMContentLoaded', () => {
           }, 2000);
           return;
         }
-        let data = {};
-        try {
-          data = await res.json();
-        } catch {}
-        setDashMessage('error', data.message || 'Could not add vaccine.');
-        return;
+                let data = {};
+                try {
+                  data = await res.json();
+                } catch {}
+                // Show detailed validation errors if available
+                let errorMsg = data.message || 'Could not add vaccine.';
+                if (data.errors && data.errors.length > 0) {
+                  errorMsg = data.errors.map(e => e.msg || e.message).join('. ');
+                }
+                setDashMessage('error', errorMsg);
+                return;
       }
       setDashMessage('success', 'Vaccine added.');
       vaccineForm.reset();
@@ -331,12 +341,17 @@ document.addEventListener('DOMContentLoaded', () => {
           }, 2000);
           return;
         }
-        let data = {};
-        try {
-          data = await res.json();
-        } catch {}
-        setDashMessage('error', data.message || 'Could not add appointment.');
-        return;
+                let data = {};
+                try {
+                  data = await res.json();
+                } catch {}
+                // Show detailed validation errors if available
+                let errorMsg = data.message || 'Could not add appointment.';
+                if (data.errors && data.errors.length > 0) {
+                  errorMsg = data.errors.map(e => e.msg || e.message).join('. ');
+                }
+                setDashMessage('error', errorMsg);
+                return;
       }
       setDashMessage('success', 'Appointment added.');
       appointmentForm.reset();

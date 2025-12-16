@@ -62,11 +62,19 @@ const validateMedicine = [
     .escape(),
   body('startDate')
     .optional()
-    .isISO8601()
+    .custom((value) => {
+      if (!value) return true; // Optional field
+      const date = new Date(value);
+      return !isNaN(date.getTime());
+    })
     .withMessage('Start date must be a valid date'),
   body('endDate')
     .optional()
-    .isISO8601()
+    .custom((value) => {
+      if (!value) return true; // Optional field
+      const date = new Date(value);
+      return !isNaN(date.getTime());
+    })
     .withMessage('End date must be a valid date'),
 ];
 
@@ -81,7 +89,10 @@ const validateVaccine = [
   body('date')
     .notEmpty()
     .withMessage('Vaccine date is required')
-    .isISO8601()
+    .custom((value) => {
+      const date = new Date(value);
+      return !isNaN(date.getTime());
+    })
     .withMessage('Vaccine date must be a valid date'),
   body('provider')
     .optional()
@@ -108,7 +119,10 @@ const validateAppointment = [
   body('date')
     .notEmpty()
     .withMessage('Appointment date is required')
-    .isISO8601()
+    .custom((value) => {
+      const date = new Date(value);
+      return !isNaN(date.getTime());
+    })
     .withMessage('Appointment date must be a valid date'),
   body('location')
     .optional()
@@ -134,9 +148,13 @@ const validateAppointment = [
 const checkValidation = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    // Create a user-friendly error message from the first error
+    const firstError = errors.array()[0];
+    const errorMessage = firstError.msg || 'Validation failed. Please check your input.';
+    
     return res.status(400).json({
-      message: 'Validation failed',
-      errors: errors.array(),
+      message: errorMessage, // Show the actual validation error message
+      errors: errors.array(), // Keep full error details for debugging
     });
   }
   next();

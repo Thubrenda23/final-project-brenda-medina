@@ -43,7 +43,12 @@ if (loginForm) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMessage('error', data.message || 'Login failed.');
+        // Show detailed validation errors if available
+        let errorMsg = data.message || 'Login failed.';
+        if (data.errors && data.errors.length > 0) {
+          errorMsg = data.errors.map(e => e.msg || e.message).join('. ');
+        }
+        setMessage('error', errorMsg);
         return;
       }
       // Store JWT token in localStorage
@@ -80,7 +85,12 @@ if (signupForm) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMessage('error', data.message || 'Sign up failed.');
+        // Show detailed validation errors if available
+        let errorMsg = data.message || 'Sign up failed.';
+        if (data.errors && data.errors.length > 0) {
+          errorMsg = data.errors.map(e => e.msg || e.message).join('. ');
+        }
+        setMessage('error', errorMsg);
         return;
       }
       // Store JWT token in localStorage

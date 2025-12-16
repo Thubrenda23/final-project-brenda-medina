@@ -132,6 +132,16 @@ function renderReminderList(target, items, type) {
 }
 
 async function loadAll() {
+  // Check if token exists
+  const token = getAuthToken();
+  if (!token) {
+    setDashMessage('error', 'Not logged in. Please log in again.');
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 2000);
+    return;
+  }
+
   // Load user profile for greeting + avatar
   try {
     const meRes = await fetch('/api/auth/me', { 

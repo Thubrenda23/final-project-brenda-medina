@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
 const requireAuth = require('../middleware/auth');
+const { validateSignup, validateLogin, checkValidation } = require('../middleware/validation');
 
 const router = express.Router();
 
@@ -34,13 +35,9 @@ async function verifyEmail(email) {
 }
 
 // POST /api/auth/signup
-router.post('/signup', async (req, res) => {
+router.post('/signup', validateSignup, checkValidation, async (req, res) => {
   try {
     const { email, password, name } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required.' });
-    }
 
     const existing = await User.findOne({ email: email.toLowerCase() });
     if (existing) {
@@ -81,13 +78,9 @@ router.post('/signup', async (req, res) => {
 });
 
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', validateLogin, checkValidation, async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required.' });
-    }
 
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {

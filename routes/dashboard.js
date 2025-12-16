@@ -1,5 +1,6 @@
 const express = require('express');
 const requireAuth = require('../middleware/auth');
+const { validateMedicine, validateVaccine, validateAppointment, checkValidation } = require('../middleware/validation');
 const Medicine = require('../models/Medicine');
 const Vaccine = require('../models/Vaccine');
 const Appointment = require('../models/Appointment');
@@ -17,12 +18,9 @@ router.get('/medicines', async (req, res) => {
   res.json(items);
 });
 
-router.post('/medicines', async (req, res) => {
+router.post('/medicines', validateMedicine, checkValidation, async (req, res) => {
   try {
     const { name, dose, frequency, notes, startDate, endDate } = req.body;
-    if (!name) {
-      return res.status(400).json({ message: 'Medicine name is required.' });
-    }
     const med = await Medicine.create({
       userId: req.userId,
       name,
@@ -54,18 +52,15 @@ router.delete('/medicines/:id', async (req, res) => {
 
 // Vaccines
 router.get('/vaccines', async (req, res) => {
-  const items = await Vaccine.find({ userId: req.session.userId }).sort({
+  const items = await Vaccine.find({ userId: req.userId }).sort({
     date: -1,
   });
   res.json(items);
 });
 
-router.post('/vaccines', async (req, res) => {
+router.post('/vaccines', validateVaccine, checkValidation, async (req, res) => {
   try {
     const { name, date, provider, notes } = req.body;
-    if (!name || !date) {
-      return res.status(400).json({ message: 'Vaccine name and date are required.' });
-    }
     const item = await Vaccine.create({
       userId: req.userId,
       name,
@@ -95,20 +90,15 @@ router.delete('/vaccines/:id', async (req, res) => {
 
 // Appointments
 router.get('/appointments', async (req, res) => {
-  const items = await Appointment.find({ userId: req.session.userId }).sort({
+  const items = await Appointment.find({ userId: req.userId }).sort({
     date: 1,
   });
   res.json(items);
 });
 
-router.post('/appointments', async (req, res) => {
+router.post('/appointments', validateAppointment, checkValidation, async (req, res) => {
   try {
     const { doctor, date, location, reason, notes } = req.body;
-    if (!doctor || !date) {
-      return res
-        .status(400)
-        .json({ message: 'Doctor and date are required for an appointment.' });
-    }
     const item = await Appointment.create({
       userId: req.userId,
       doctor,

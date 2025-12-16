@@ -41,16 +41,25 @@ if (loginForm) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
+      
+      // Check if response is ok before parsing JSON
       if (!res.ok) {
-        // Show detailed validation errors if available
-        let errorMsg = data.message || 'Login failed.';
-        if (data.errors && data.errors.length > 0) {
-          errorMsg = data.errors.map(e => e.msg || e.message).join('. ');
+        let errorMsg = 'Login failed.';
+        try {
+          const data = await res.json();
+          errorMsg = data.message || 'Login failed.';
+          if (data.errors && data.errors.length > 0) {
+            errorMsg = data.errors.map(e => e.msg || e.message).join('. ');
+          }
+        } catch (parseErr) {
+          // If JSON parsing fails, use status text
+          errorMsg = `Login failed: ${res.status} ${res.statusText}`;
         }
         setMessage('error', errorMsg);
         return;
       }
+      
+      const data = await res.json();
       // Store JWT token in localStorage
       if (data.token) {
         localStorage.setItem('vicare_token', data.token);
@@ -83,16 +92,25 @@ if (signupForm) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
+      
+      // Check if response is ok before parsing JSON
       if (!res.ok) {
-        // Show detailed validation errors if available
-        let errorMsg = data.message || 'Sign up failed.';
-        if (data.errors && data.errors.length > 0) {
-          errorMsg = data.errors.map(e => e.msg || e.message).join('. ');
+        let errorMsg = 'Sign up failed.';
+        try {
+          const data = await res.json();
+          errorMsg = data.message || 'Sign up failed.';
+          if (data.errors && data.errors.length > 0) {
+            errorMsg = data.errors.map(e => e.msg || e.message).join('. ');
+          }
+        } catch (parseErr) {
+          // If JSON parsing fails, use status text
+          errorMsg = `Sign up failed: ${res.status} ${res.statusText}`;
         }
         setMessage('error', errorMsg);
         return;
       }
+      
+      const data = await res.json();
       // Store JWT token in localStorage
       if (data.token) {
         localStorage.setItem('vicare_token', data.token);

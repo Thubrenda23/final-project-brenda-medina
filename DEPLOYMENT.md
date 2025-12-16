@@ -22,7 +22,7 @@
 
 4. **Add Environment Variables**
    Click "Advanced" → "Add Environment Variable" and add:
-   - `MONGODB_URI` = `mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/?appName=Vilcare`
+   - `MONGODB_URI` = `mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/vicare?appName=Vilcare`
    - `SESSION_SECRET` = (generate a random string, e.g., use: `openssl rand -hex 32`)
    - `EMAIL_VERIFY_API_KEY` = `f3a5ed3cabe2fd74c2fcd37772e9a1ca`
    - `NODE_ENV` = `production`
@@ -50,7 +50,7 @@
 
 3. **Configure Environment Variables**
    Click on your service → "Variables" tab → "New Variable":
-   - `MONGODB_URI` = `mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/?appName=Vilcare`
+   - `MONGODB_URI` = `mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/vicare?appName=Vilcare`
    - `SESSION_SECRET` = (generate a random string)
    - `EMAIL_VERIFY_API_KEY` = `f3a5ed3cabe2fd74c2fcd37772e9a1ca`
    - `NODE_ENV` = `production`

@@ -22,7 +22,7 @@ npm install
 2. Create a `.env` file in the project root with:
 
 ```bash
-MONGODB_URI=mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/?appName=Vilcare
+MONGODB_URI=mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/vicare?appName=Vilcare
 JWT_SECRET=your_secret_key_here_change_in_production
 SESSION_SECRET=change_this_secret  # Optional, used as fallback for JWT_SECRET
 EMAIL_VERIFY_API_KEY=YOUR_APILAYER_ACCESS_KEY

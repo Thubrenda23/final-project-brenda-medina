@@ -30,7 +30,7 @@ Fill in these settings:
 Scroll down to **"Environment Variables"** section and click **"Add Environment Variable"** for each:
 
 1. **Variable**: `MONGODB_URI`
-   **Value**: `mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/?appName=Vilcare`
+   **Value**: `mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/vicare?appName=Vilcare`
 
 2. **Variable**: `SESSION_SECRET`
    **Value**: `vicare_secret_key_2024_secure_random_string` (or generate one)

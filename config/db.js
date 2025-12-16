@@ -4,7 +4,7 @@ const connectDB = async () => {
   try {
     const uri =
       process.env.MONGODB_URI ||
-      'mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/?appName=Vilcare';
+      'mongodb+srv://bcm:vilcare@vilcare.dr0ijnv.mongodb.net/vicare?appName=Vilcare';
     if (!uri) {
       console.error('MONGODB_URI is not set; no fallback URI available.');
       process.exit(1);

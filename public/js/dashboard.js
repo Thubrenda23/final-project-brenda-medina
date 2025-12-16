@@ -211,6 +211,14 @@ async function loadAll() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Check if user is logged in (has token)
+  const token = getAuthToken();
+  if (!token) {
+    alert('Please log in to access the dashboard.');
+    window.location.href = '/';
+    return;
+  }
+
   const medicineForm = document.getElementById('medicine-form');
   const vaccineForm = document.getElementById('vaccine-form');
   const appointmentForm = document.getElementById('appointment-form');

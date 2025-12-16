@@ -56,14 +56,21 @@ router.post('/signup', async (req, res) => {
       name: name || '',
     });
 
-    // Set userId directly - express-session will save automatically
+    // Set userId - express-session will save automatically
     req.session.userId = user._id.toString();
     
     console.log('Signup: Session ID =', req.sessionID);
     console.log('Signup: Setting userId =', user._id.toString());
-    console.log('Signup: Session cookie will be set automatically');
     
-    // Send response - session will be saved automatically by express-session
+    // Ensure session is saved before sending response
+    await new Promise((resolve) => {
+      req.session.save(() => {
+        console.log('Signup: Session saved, userId =', req.session.userId);
+        console.log('Signup: Cookie should be set by express-session');
+        resolve();
+      });
+    });
+    
     res.json({
       message: 'Signup successful',
       user: { id: user._id, email: user.email, name: user.name },
@@ -93,24 +100,20 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
-    // Set userId directly - express-session will save automatically
+    // Set userId - express-session will save automatically
     req.session.userId = user._id.toString();
     
     console.log('Login: Session ID =', req.sessionID);
     console.log('Login: Setting userId =', user._id.toString());
-    console.log('Login: Session object keys =', Object.keys(req.session));
+    console.log('Login: Session will be saved automatically');
     
-    // Manually touch the session to ensure it's saved
-    req.session.touch();
-    
-    // Send response - session will be saved automatically by express-session
-    // But we'll also manually ensure cookie is set
-    res.cookie('vicare.sid', req.sessionID, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000,
-      path: '/',
+    // Ensure session is saved before sending response
+    await new Promise((resolve) => {
+      req.session.save(() => {
+        console.log('Login: Session saved, userId =', req.session.userId);
+        console.log('Login: Cookie should be set by express-session');
+        resolve();
+      });
     });
     
     res.json({

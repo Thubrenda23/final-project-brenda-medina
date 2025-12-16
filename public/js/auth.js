@@ -48,7 +48,10 @@ if (loginForm) {
         return;
       }
       setMessage('success', 'Login successful. Redirecting...');
-      window.location.href = '/dashboard.html';
+      // Wait a moment to ensure cookie is set before redirecting
+      setTimeout(() => {
+        window.location.href = '/dashboard.html';
+      }, 500);
     } catch (err) {
       setMessage('error', 'Network error while logging in.');
     }
@@ -75,7 +78,10 @@ if (signupForm) {
         return;
       }
       setMessage('success', 'Account created! Redirecting...');
-      window.location.href = '/dashboard.html';
+      // Wait a moment to ensure cookie is set before redirecting
+      setTimeout(() => {
+        window.location.href = '/dashboard.html';
+      }, 500);
     } catch (err) {
       setMessage('error', 'Network error while signing up.');
     }

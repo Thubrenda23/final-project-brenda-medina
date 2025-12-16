@@ -49,6 +49,11 @@ if (loginForm) {
       // Store JWT token in localStorage
       if (data.token) {
         localStorage.setItem('vicare_token', data.token);
+        console.log('Token stored in localStorage');
+        console.log('Token (first 20 chars):', data.token.substring(0, 20) + '...');
+      } else {
+        console.error('No token received from server!');
+        console.error('Response data:', data);
       }
       setMessage('success', 'Login successful. Redirecting...');
       setTimeout(() => {
@@ -81,6 +86,11 @@ if (signupForm) {
       // Store JWT token in localStorage
       if (data.token) {
         localStorage.setItem('vicare_token', data.token);
+        console.log('Token stored in localStorage');
+        console.log('Token (first 20 chars):', data.token.substring(0, 20) + '...');
+      } else {
+        console.error('No token received from server!');
+        console.error('Response data:', data);
       }
       setMessage('success', 'Account created! Redirecting...');
       setTimeout(() => {

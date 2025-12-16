@@ -10,14 +10,17 @@ function getAuthHeaders(includeContentType = true) {
   const token = getAuthToken();
   if (!token) {
     console.error('No token found in localStorage');
+    console.error('localStorage contents:', Object.keys(localStorage));
     return includeContentType ? { 'Content-Type': 'application/json' } : {};
   }
+  console.log('Sending request with token (first 20 chars):', token.substring(0, 20) + '...');
   const headers = {
     'Authorization': `Bearer ${token}`,
   };
   if (includeContentType) {
     headers['Content-Type'] = 'application/json';
   }
+  console.log('Request headers:', headers);
   return headers;
 }
 

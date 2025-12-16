@@ -14,11 +14,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Helper function to get auth headers
-  function getAuthHeaders() {
+  function getAuthHeaders(includeContentType = false) {
     const token = getAuthToken();
-    return {
-      'Authorization': token ? `Bearer ${token}` : '',
+    if (!token) {
+      console.error('No token found in localStorage');
+      return includeContentType ? { 'Content-Type': 'application/json' } : {};
+    }
+    const headers = {
+      'Authorization': `Bearer ${token}`,
     };
+    if (includeContentType) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return headers;
   }
 
   function setSettingsMessage(type, text) {
@@ -71,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const res = await fetch('/api/avatar', {
           method: 'POST',
-          headers: getAuthHeaders(),
+          headers: getAuthHeaders(false), // Don't include Content-Type for FormData
           body: formData,
         });
         const data = await res.json();

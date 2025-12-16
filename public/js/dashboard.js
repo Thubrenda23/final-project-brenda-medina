@@ -6,12 +6,19 @@ function getAuthToken() {
 }
 
 // Helper function to get auth headers
-function getAuthHeaders() {
+function getAuthHeaders(includeContentType = true) {
   const token = getAuthToken();
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': token ? `Bearer ${token}` : '',
+  if (!token) {
+    console.error('No token found in localStorage');
+    return includeContentType ? { 'Content-Type': 'application/json' } : {};
+  }
+  const headers = {
+    'Authorization': `Bearer ${token}`,
   };
+  if (includeContentType) {
+    headers['Content-Type'] = 'application/json';
+  }
+  return headers;
 }
 
 function setDashMessage(type, text) {

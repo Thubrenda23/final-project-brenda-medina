@@ -8,6 +8,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const settingsMessage = document.getElementById('settings-message');
   const toggleThemeBtn = document.getElementById('toggle-theme-btn');
 
+  // Helper function to get auth token
+  function getAuthToken() {
+    return localStorage.getItem('vicare_token');
+  }
+
+  // Helper function to get auth headers
+  function getAuthHeaders() {
+    const token = getAuthToken();
+    return {
+      'Authorization': token ? `Bearer ${token}` : '',
+    };
+  }
+
   function setSettingsMessage(type, text) {
     settingsMessage.classList.remove('error', 'success');
     if (type) settingsMessage.classList.add(type);
@@ -58,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const res = await fetch('/api/avatar', {
           method: 'POST',
-          credentials: 'include',
+          headers: getAuthHeaders(),
           body: formData,
         });
         const data = await res.json();
@@ -81,8 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const res = await fetch('/api/support', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders(),
+          },
           body: JSON.stringify(payload),
         });
         const data = await res.json();
@@ -102,13 +117,17 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteAccountBtn.addEventListener('click', async () => {
       if (!window.confirm('Are you sure you want to delete your account?')) return;
       try {
-        const res = await fetch('/api/account', { method: 'DELETE', credentials: 'include' });
+        const res = await fetch('/api/account', { 
+          method: 'DELETE', 
+          headers: getAuthHeaders() 
+        });
         const data = await res.json();
         if (!res.ok) {
           setSettingsMessage('error', data.message || 'Error deleting account.');
           return;
         }
         setSettingsMessage('success', 'Account deleted. Redirecting...');
+        localStorage.removeItem('vicare_token');
         setTimeout(() => {
           window.location.href = '/';
         }, 1200);

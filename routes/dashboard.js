@@ -11,7 +11,7 @@ router.use(requireAuth);
 
 // Medicines
 router.get('/medicines', async (req, res) => {
-  const items = await Medicine.find({ userId: req.session.userId }).sort({
+  const items = await Medicine.find({ userId: req.userId }).sort({
     createdAt: -1,
   });
   res.json(items);
@@ -24,7 +24,7 @@ router.post('/medicines', async (req, res) => {
       return res.status(400).json({ message: 'Medicine name is required.' });
     }
     const med = await Medicine.create({
-      userId: req.session.userId,
+      userId: req.userId,
       name,
       dose,
       frequency,
@@ -43,7 +43,7 @@ router.delete('/medicines/:id', async (req, res) => {
   try {
     await Medicine.deleteOne({
       _id: req.params.id,
-      userId: req.session.userId,
+      userId: req.userId,
     });
     res.json({ message: 'Medicine deleted.' });
   } catch (err) {
@@ -67,7 +67,7 @@ router.post('/vaccines', async (req, res) => {
       return res.status(400).json({ message: 'Vaccine name and date are required.' });
     }
     const item = await Vaccine.create({
-      userId: req.session.userId,
+      userId: req.userId,
       name,
       date: new Date(date),
       provider,
@@ -84,7 +84,7 @@ router.delete('/vaccines/:id', async (req, res) => {
   try {
     await Vaccine.deleteOne({
       _id: req.params.id,
-      userId: req.session.userId,
+      userId: req.userId,
     });
     res.json({ message: 'Vaccine deleted.' });
   } catch (err) {
@@ -110,7 +110,7 @@ router.post('/appointments', async (req, res) => {
         .json({ message: 'Doctor and date are required for an appointment.' });
     }
     const item = await Appointment.create({
-      userId: req.session.userId,
+      userId: req.userId,
       doctor,
       date: new Date(date),
       location,
@@ -128,7 +128,7 @@ router.delete('/appointments/:id', async (req, res) => {
   try {
     await Appointment.deleteOne({
       _id: req.params.id,
-      userId: req.session.userId,
+      userId: req.userId,
     });
     res.json({ message: 'Appointment deleted.' });
   } catch (err) {

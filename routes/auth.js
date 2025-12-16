@@ -1,11 +1,15 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
 const requireAuth = require('../middleware/auth');
 
 const router = express.Router();
+
+// JWT secret - use environment variable or fallback
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'vicare_jwt_secret_change_in_production';
 
 // Helper to call email verification API
 async function verifyEmail(email) {
@@ -56,24 +60,19 @@ router.post('/signup', async (req, res) => {
       name: name || '',
     });
 
-    // Set userId - express-session will save automatically
-    req.session.userId = user._id.toString();
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id.toString() },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
     
-    console.log('Signup: Session ID =', req.sessionID);
-    console.log('Signup: Setting userId =', user._id.toString());
-    
-    // Ensure session is saved before sending response
-    await new Promise((resolve) => {
-      req.session.save(() => {
-        console.log('Signup: Session saved, userId =', req.session.userId);
-        console.log('Signup: Cookie should be set by express-session');
-        resolve();
-      });
-    });
+    console.log('Signup: User created, JWT token generated');
     
     res.json({
       message: 'Signup successful',
       user: { id: user._id, email: user.email, name: user.name },
+      token: token, // Send token to frontend
     });
   } catch (err) {
     console.error('Signup error:', err.message);
@@ -100,32 +99,19 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
-    // Set userId - express-session will save automatically
-    req.session.userId = user._id.toString();
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id.toString() },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
     
-    console.log('Login: Session ID =', req.sessionID);
-    console.log('Login: Setting userId =', user._id.toString());
-    
-    // Save session and wait for it to complete
-    await new Promise((resolve, reject) => {
-      req.session.save((err) => {
-        if (err) {
-          console.error('Login: Session save error:', err);
-          return reject(err);
-        }
-        console.log('Login: Session saved successfully');
-        console.log('Login: Session userId after save =', req.session.userId);
-        console.log('Login: Session cookie name = vicare.sid');
-        resolve();
-      });
-    });
-    
-    // Log what cookie will be set
-    console.log('Login: About to send response with session cookie');
+    console.log('Login: JWT token generated for user:', user._id.toString());
     
     res.json({
       message: 'Login successful',
       user: { id: user._id, email: user.email, name: user.name },
+      token: token, // Send token to frontend
     });
   } catch (err) {
     console.error('Login error:', err.message);
@@ -134,21 +120,16 @@ router.post('/login', async (req, res) => {
 });
 
 // POST /api/auth/logout
-router.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error('Logout error:', err.message);
-      return res.status(500).json({ message: 'Error logging out.' });
-    }
-    res.clearCookie('vicare.sid'); // Use correct session name
-    res.json({ message: 'Logged out' });
-  });
+router.post('/logout', requireAuth, (req, res) => {
+  // With JWT, logout is handled client-side by removing the token
+  // This endpoint just confirms the logout
+  res.json({ message: 'Logged out' });
 });
 
 // GET /api/auth/me - current user profile
 router.get('/me', requireAuth, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId).lean();
+    const user = await User.findById(req.userId).lean();
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

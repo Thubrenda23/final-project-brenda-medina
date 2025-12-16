@@ -47,8 +47,11 @@ if (loginForm) {
         setMessage('error', data.message || 'Login failed.');
         return;
       }
+      // Store JWT token in localStorage
+      if (data.token) {
+        localStorage.setItem('vicare_token', data.token);
+      }
       setMessage('success', 'Login successful. Redirecting...');
-      // Wait a moment to ensure cookie is set before redirecting
       setTimeout(() => {
         window.location.href = '/dashboard.html';
       }, 500);
@@ -77,8 +80,11 @@ if (signupForm) {
         setMessage('error', data.message || 'Sign up failed.');
         return;
       }
+      // Store JWT token in localStorage
+      if (data.token) {
+        localStorage.setItem('vicare_token', data.token);
+      }
       setMessage('success', 'Account created! Redirecting...');
-      // Wait a moment to ensure cookie is set before redirecting
       setTimeout(() => {
         window.location.href = '/dashboard.html';
       }, 500);

@@ -1,5 +1,19 @@
 const dashMessage = document.getElementById('dashboard-message');
 
+// Helper function to get auth token
+function getAuthToken() {
+  return localStorage.getItem('vicare_token');
+}
+
+// Helper function to get auth headers
+function getAuthHeaders() {
+  const token = getAuthToken();
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': token ? `Bearer ${token}` : '',
+  };
+}
+
 function setDashMessage(type, text) {
   if (!dashMessage) return;
   dashMessage.classList.remove('error', 'success');
@@ -57,7 +71,10 @@ function renderList(target, items, type) {
       if (type === 'vaccine') url = `/api/vaccines/${item._id}`;
       if (type === 'appointment') url = `/api/appointments/${item._id}`;
 
-      const res = await fetch(url, { method: 'DELETE', credentials: 'include' });
+      const res = await fetch(url, { 
+        method: 'DELETE', 
+        headers: getAuthHeaders() 
+      });
       if (res.ok) {
         loadAll();
       }
@@ -110,7 +127,9 @@ function renderReminderList(target, items, type) {
 async function loadAll() {
   // Load user profile for greeting + avatar
   try {
-    const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+    const meRes = await fetch('/api/auth/me', { 
+      headers: getAuthHeaders() 
+    });
     if (meRes.ok) {
       const me = await meRes.json();
       const greeting = document.getElementById('nav-greeting');
@@ -129,9 +148,9 @@ async function loadAll() {
   }
 
   const [medRes, vacRes, appRes] = await Promise.all([
-    fetch('/api/medicines', { credentials: 'include' }),
-    fetch('/api/vaccines', { credentials: 'include' }),
-    fetch('/api/appointments', { credentials: 'include' }),
+    fetch('/api/medicines', { headers: getAuthHeaders() }),
+    fetch('/api/vaccines', { headers: getAuthHeaders() }),
+    fetch('/api/appointments', { headers: getAuthHeaders() }),
   ]);
   if (!medRes.ok || !vacRes.ok || !appRes.ok) {
     setDashMessage('error', 'Could not load data. Please log in again.');
@@ -184,7 +203,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
-      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      await fetch('/api/auth/logout', { 
+        method: 'POST', 
+        headers: getAuthHeaders() 
+      });
+      localStorage.removeItem('vicare_token');
       window.location.href = '/';
     });
   }
@@ -196,8 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const payload = Object.fromEntries(formData.entries());
       const res = await fetch('/api/medicines', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
@@ -221,8 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const payload = Object.fromEntries(formData.entries());
       const res = await fetch('/api/vaccines', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
@@ -246,8 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const payload = Object.fromEntries(formData.entries());
       const res = await fetch('/api/appointments', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       });
       if (!res.ok) {

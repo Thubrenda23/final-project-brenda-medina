@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname) || '.jpg';
-    cb(null, `avatar-${req.session.userId}${ext}`);
+    cb(null, `avatar-${req.userId}${ext}`);
   },
 });
 
@@ -28,7 +28,7 @@ router.use(requireAuth);
 // Delete account and related data
 router.delete('/account', async (req, res) => {
   try {
-    const userId = req.session.userId;
+    const userId = req.userId;
     await Promise.all([
       User.deleteOne({ _id: userId }),
       Medicine.deleteMany({ userId }),
@@ -37,9 +37,7 @@ router.delete('/account', async (req, res) => {
       SupportMessage.deleteMany({ userId }),
     ]);
 
-    req.session.destroy(() => {
-      res.json({ message: 'Account and data deleted.' });
-    });
+    res.json({ message: 'Account and data deleted.' });
   } catch (err) {
     console.error('Delete account error:', err.message);
     res.status(500).json({ message: 'Error deleting account.' });
@@ -58,7 +56,7 @@ router.post('/avatar', upload.single('avatarFile'), async (req, res) => {
     }
 
     await User.updateOne(
-      { _id: req.session.userId },
+      { _id: req.userId },
       {
         $set: {
           avatarUrl,
@@ -83,7 +81,7 @@ router.post('/support', async (req, res) => {
     }
 
     await SupportMessage.create({
-      userId: req.session.userId,
+      userId: req.userId,
       message,
     });
 

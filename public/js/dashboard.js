@@ -170,7 +170,15 @@ async function loadAll() {
     fetch('/api/appointments', { headers: getAuthHeaders() }),
   ]);
   if (!medRes.ok || !vacRes.ok || !appRes.ok) {
-    setDashMessage('error', 'Could not load data. Please log in again.');
+    if (medRes.status === 401 || vacRes.status === 401 || appRes.status === 401) {
+      setDashMessage('error', 'Session expired. Please log in again.');
+      localStorage.removeItem('vicare_token');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 2000);
+    } else {
+      setDashMessage('error', 'Could not load data. Please try again.');
+    }
     return;
   }
   const [medicines, vaccines, appointments] = await Promise.all([
@@ -248,6 +256,14 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
+        if (res.status === 401) {
+          setDashMessage('error', 'Session expired. Please log in again.');
+          localStorage.removeItem('vicare_token');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+          return;
+        }
         let data = {};
         try {
           data = await res.json();
@@ -272,6 +288,14 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
+        if (res.status === 401) {
+          setDashMessage('error', 'Session expired. Please log in again.');
+          localStorage.removeItem('vicare_token');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+          return;
+        }
         let data = {};
         try {
           data = await res.json();
@@ -296,6 +320,14 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
+        if (res.status === 401) {
+          setDashMessage('error', 'Session expired. Please log in again.');
+          localStorage.removeItem('vicare_token');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+          return;
+        }
         let data = {};
         try {
           data = await res.json();

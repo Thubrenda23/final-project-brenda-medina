@@ -141,7 +141,7 @@ async function loadAll() {
     setDashMessage('error', 'Not logged in. Please log in again.');
     setTimeout(() => {
       window.location.href = '/';
-    }, 2000);
+    }, 1200);
     return;
   }
 
@@ -150,6 +150,14 @@ async function loadAll() {
     const meRes = await fetch('/api/auth/me', { 
       headers: getAuthHeaders() 
     });
+    if (meRes.status === 401) {
+      setDashMessage('error', 'Session expired. Please log in again.');
+      localStorage.removeItem('vicare_token');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1200);
+      return;
+    }
     if (meRes.ok) {
       const me = await meRes.json();
       const greeting = document.getElementById('nav-greeting');
@@ -225,8 +233,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check if user is logged in (has token)
   const token = getAuthToken();
   if (!token) {
-    alert('Please log in to access the dashboard.');
-    window.location.href = '/';
+    setDashMessage('error', 'Please log in to access the dashboard.');
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 800);
     return;
   }
 

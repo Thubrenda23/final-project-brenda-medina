@@ -29,6 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return headers;
   }
 
+  // If no token, redirect to login
+  const token = getAuthToken();
+  if (!token) {
+    window.location.href = '/';
+    return;
+  }
+
   function setSettingsMessage(type, text) {
     settingsMessage.classList.remove('error', 'success');
     if (type) settingsMessage.classList.add(type);
@@ -84,6 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const data = await res.json();
         if (!res.ok) {
+          if (res.status === 401) {
+            localStorage.removeItem('vicare_token');
+            window.location.href = '/';
+            return;
+          }
           setSettingsMessage('error', data.message || 'Error updating profile.');
           return;
         }
@@ -110,6 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const data = await res.json();
         if (!res.ok) {
+          if (res.status === 401) {
+            localStorage.removeItem('vicare_token');
+            window.location.href = '/';
+            return;
+          }
           setSettingsMessage('error', data.message || 'Error sending support message.');
           return;
         }
@@ -131,6 +148,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const data = await res.json();
         if (!res.ok) {
+          if (res.status === 401) {
+            localStorage.removeItem('vicare_token');
+            window.location.href = '/';
+            return;
+          }
           setSettingsMessage('error', data.message || 'Error deleting account.');
           return;
         }

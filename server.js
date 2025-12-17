@@ -24,7 +24,7 @@ app.use(helmet({
 // More lenient in development, stricter in production
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // 100 in production, 1000 in development
+  max: process.env.NODE_ENV === 'production' ? 100 : 2000, // more lenient in dev
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -35,7 +35,7 @@ app.use('/api/', limiter);
 // More lenient in development, stricter in production
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 5 : 50, // 5 in production, 50 in development
+  max: process.env.NODE_ENV === 'production' ? 5 : 100, // more lenient in dev
   message: 'Too many authentication attempts, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
